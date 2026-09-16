@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Arcturus">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<title>Arcturus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F4EF;--bg2:#EFEBE4;--bg3:#E6E0D6;
+  --surface:#FFFFFF;--border:#DDD7CC;--border2:#C8C0B2;
+  --text:#1A1714;--text2:#5C554C;--text3:#8C877F;
+  --accent:#C25B3F;--accent2:#A04830;
+  --sidebar-w:220px;--header-h:56px;--radius:8px;--bottom-nav-h:60px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
+  --font-body:'DM Sans',sans-serif;
+  --font-display:'DM Serif Display',serif;
+  --font-mono:'DM Mono',monospace;
+  --font-logo:'Bebas Neue',sans-serif;
+  --ease:cubic-bezier(0.4,0,0.2,1);
+}
+html,body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;height:100%;overscroll-behavior:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:var(--sidebar-w);background:var(--text);color:var(--bg);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.sidebar-logo{padding:44px 20px 13px;border-bottom:1px solid rgba(255,255,255,0.08);-webkit-app-region:drag}
+.sidebar-logo-name{font-family:var(--font-logo);font-size:22px;letter-spacing:0.06em;color:#F7F4EF;line-height:1;display:flex;align-items:center;gap:6px}
+.sidebar-logo-sub{font-size:9px;color:#C25B3F;letter-spacing:0.1em;text-transform:uppercase;margin-top:3px;font-family:var(--font-mono)}
+.sidebar-logo-version{font-size:8px;color:rgba(247,244,239,0.2);letter-spacing:0.08em;font-family:var(--font-mono);margin-top:2px}
+.sidebar-nav{padding:12px 10px;flex:1;overflow-y:auto}
+.sidebar-section-label{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(247,244,239,0.28);font-family:var(--font-mono);padding:10px 10px 4px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13px;font-family:var(--font-body);color:rgba(247,244,239,0.62);transition:background 0.15s var(--ease),color 0.15s var(--ease);border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:#F7F4EF}
+.nav-item.active{background:rgba(194,91,63,0.25);color:#F7F4EF}
+.nav-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+.nav-count{margin-left:auto;font-size:10px;font-family:var(--font-mono);color:rgba(247,244,239,0.32);background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:var(--header-h);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:12px;background:var(--surface);flex-shrink:0;flex-grow:0;padding-top:env(safe-area-inset-top)}
+.topbar-title{font-family:var(--font-display);font-size:17px;flex:1;color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);font-size:13px;font-weight:500;font-family:var(--font-body);cursor:pointer;border:none;transition:background 0.15s var(--ease),border-color 0.15s var(--ease),color 0.15s var(--ease),transform 0.1s var(--ease);white-space:nowrap}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:var(--accent);color:white}
+.btn-primary:hover{background:var(--accent2)}
+.btn-primary:disabled{opacity:0.6;cursor:default}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--bg2);border-color:var(--border2);color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-danger{background:#DC2626;color:white}
+.btn-danger:hover{background:#B91C1C}
+.btn-copy{background:var(--bg2);color:var(--text2);border:1px solid var(--border);padding:4px 9px;font-size:11px}
+.btn-copy:hover{background:var(--bg3);color:var(--text)}
+.btn-copy.copied{background:#E6F0E6;color:#2A6B2A;border-color:#2A6B2A44}
+.content{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px}
+.view-enter{animation:viewFade 0.22s var(--ease);flex:1;position:relative;min-height:0;overflow:hidden}
+@keyframes viewFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.stats-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:24px}
+.stats-grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;transition:box-shadow 0.15s var(--ease),transform 0.15s var(--ease)}
+.stat-label{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);font-family:var(--font-mono);margin-bottom:8px;line-height:1.3}
+.stat-value{font-family:var(--font-display);font-size:32px;line-height:1;display:block;min-height:38px}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:5px;font-family:var(--font-body)}
+.two-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);min-width:0;transition:box-shadow 0.15s var(--ease)}
+.card-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text2);font-family:var(--font-mono)}
+.card-body{padding:16px}
+.status-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+.status-row:last-child{border-bottom:none}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.pillar-dot-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px 5px 8px;border-radius:20px;font-size:12px;font-family:var(--font-body);cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:all 0.15s var(--ease)}
+.pillar-dot-chip .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pillar-dot-chip.active{border-color:transparent;color:white}
+.pillar-dot-chip:hover{border-color:var(--border2)}
+.platform-toggle{display:flex;border:1px solid var(--border);border-radius:20px;overflow:hidden;background:var(--surface)}
+.platform-toggle-btn{display:flex;align-items:center;gap:5px;padding:5px 12px;font-size:12px;font-family:var(--font-body);color:var(--text2);cursor:pointer;background:none;border:none;border-right:1px solid var(--border);transition:background 0.15s var(--ease),color 0.15s var(--ease)}
+.platform-toggle-btn:last-child{border-right:none}
+.platform-toggle-btn.active{background:var(--bg2);color:var(--text);font-weight:500}
+.platform-toggle-btn img{display:block}
+.sort-select{appearance:none;-webkit-appearance:none;cursor:pointer;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--text2);font-size:12px;font-family:var(--font-body);padding:6px 26px 6px 12px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238C877F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.filter-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-family:var(--font-body);cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:all 0.15s var(--ease);-webkit-appearance:none;appearance:none;outline:none}
+.filter-chip:hover{border-color:var(--border2);color:var(--text)}
+.filter-chip.active{border-color:var(--accent);background:var(--accent);color:white}
+.post-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.post-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;cursor:pointer;transition:border-color 0.15s var(--ease),box-shadow 0.15s var(--ease),transform 0.15s var(--ease);box-shadow:var(--shadow)}
+.post-card:hover{border-color:var(--border2);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.post-card-pillar-bar{height:3px;border-radius:1.5px;margin-bottom:12px}
+.post-card-title{font-size:14px;font-weight:700;font-family:var(--font-body);margin-bottom:6px;line-height:1.35;color:var(--text)}
+.post-card-body{font-size:12px;font-weight:400;font-family:var(--font-body);color:var(--text2);line-height:1.55;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.post-card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500;font-family:var(--font-mono);letter-spacing:0.02em}
+.post-card-date{margin-left:auto;font-size:10px;color:var(--text3);font-family:var(--font-mono)}
+.post-card-embargoed{background:var(--bg2);opacity:0.82}
+.post-card-embargoed:hover{opacity:1}
+.embargo-section-divider{display:flex;align-items:center;gap:10px;margin:22px 0 12px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#DC2626;font-family:var(--font-mono)}
+.embargo-section-divider::after{content:"";flex:1;height:1px;background:#DC262633}
+.pbadge{display:inline-block;flex-shrink:0}
+.status-chip-row{display:flex;gap:8px;flex-wrap:wrap}
+.status-chip{padding:10px 16px;border-radius:20px;font-size:13px;font-family:var(--font-body);font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);transition:all 0.15s var(--ease);min-height:40px;display:flex;align-items:center;gap:6px}
+.status-chip:active{transform:scale(0.97)}
+.status-filter-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-family:var(--font-body);font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);transition:all 0.15s var(--ease);display:inline-flex;align-items:center;gap:6px}
+.status-filter-chip .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.word-count-row{display:flex;align-items:center;justify-content:space-between;margin-top:6px;padding:0 2px}
+.word-count-text{font-size:10px;color:var(--text3);font-family:var(--font-mono)}
+.perf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.perf-stat{background:var(--bg2);border-radius:var(--radius);padding:10px 12px;text-align:center}
+.perf-stat-label{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);font-family:var(--font-mono);margin-bottom:4px}
+.perf-stat-value{font-family:var(--font-display);font-size:22px;color:var(--text);line-height:1}
+.editor-form{padding:24px;overflow-y:auto;flex:1;min-height:0}
+.form-group{margin-bottom:18px}
+.form-label{display:flex;align-items:center;justify-content:space-between;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text2);margin-bottom:6px;font-family:var(--font-mono)}
+.form-input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:var(--font-body);background:var(--surface);color:var(--text);transition:border-color 0.15s var(--ease);outline:none;line-height:1.5}
+.form-input:focus{border-color:var(--accent)}
+.form-textarea{resize:vertical;min-height:100px;line-height:1.6}
+.form-textarea.tall{min-height:220px}
+.form-textarea.short{min-height:70px}
+.form-select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238C877F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.section-divider{border:none;border-top:1px solid var(--border);margin:24px 0}
+.section-heading{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);font-family:var(--font-mono);margin-bottom:14px}
+.published-date-field{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:12px;color:var(--text2);font-family:var(--font-mono);display:flex;align-items:center;gap:8px}
+.published-date-dot{width:7px;height:7px;border-radius:50%;background:#6B7280;flex-shrink:0}
+.post-url-link{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:var(--radius);background:#0A66C2;color:white;font-size:11px;font-family:var(--font-body);text-decoration:none;font-weight:500;transition:background 0.15s var(--ease)}
+.post-url-link:hover{background:#084f9a}
+.autosave-indicator{font-size:10px;font-family:var(--font-mono);color:var(--text3);display:flex;align-items:center;gap:5px}
+.autosave-dot{width:5px;height:5px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background 0.3s var(--ease)}
+.autosave-dot.saving{background:#F59E0B;animation:pulse 1s infinite}
+.autosave-dot.saved{background:#4CAF50}
+.autosave-dot.error{background:#DC2626}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;color:var(--text3);gap:10px}
+.empty-title{font-size:15px;font-weight:500;font-family:var(--font-body);color:var(--text2)}
+.empty-sub{font-size:13px;font-family:var(--font-body);max-width:280px;line-height:1.5}
+.sheet-bar{background:var(--bg2);border-top:1px solid var(--border);padding:6px 22px;display:flex;align-items:center;gap:10px;font-size:10px;color:var(--text3);font-family:var(--font-mono);flex-shrink:0;flex-grow:0}
+.sheet-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;transition:background 0.3s var(--ease)}
+.sheet-dot.connected{background:#4CAF50}
+.sheet-dot.loading{background:#F59E0B}
+.sheet-dot.error{background:#DC2626}
+.sheet-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:3px;font-size:9px;font-family:var(--font-mono)}
+.sheet-badge.synced{background:#E6F0E6;color:#2A6B2A}
+.sheet-badge.pending{background:#FEF3C7;color:#92400E}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;animation:overlayFade 0.15s var(--ease)}
+@keyframes overlayFade{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surface);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.15);width:480px;max-width:100%;padding:24px;max-height:90vh;overflow-y:auto;animation:modalRise 0.18s var(--ease)}
+@keyframes modalRise{from{opacity:0;transform:translateY(8px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal-title{font-family:var(--font-display);font-size:20px;margin-bottom:16px;color:var(--text)}
+.modal-sub{font-size:12px;color:var(--text3);margin-top:-10px;margin-bottom:16px;line-height:1.5}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#F7F4EF;padding:10px 16px;border-radius:var(--radius);font-size:12px;font-family:var(--font-mono);z-index:200;opacity:0;transform:translateY(8px);transition:all 0.2s var(--ease);pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.error{background:#DC2626}
+.loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:12px}
+.loading-spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes confetti-fall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(115vh) rotate(360deg);opacity:0}}
+.topbar-brand{display:none}
+.mobile-menu-btn{display:none}
+.mobile-menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:150;display:flex;justify-content:flex-end;animation:overlayFade 0.15s var(--ease)}
+.mobile-menu-panel{width:250px;background:var(--text);color:#F7F4EF;height:100%;padding:20px 14px;padding-top:calc(20px + max(24px,env(safe-area-inset-top)));display:flex;flex-direction:column;gap:6px;animation:panelSlide 0.2s var(--ease)}
+@keyframes panelSlide{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
+.mobile-menu-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;background:none;border:none;color:rgba(247,244,239,0.75);font-size:14px;font-family:var(--font-body);cursor:pointer;text-align:left}
+.mobile-menu-item:active{background:rgba(255,255,255,0.08)}
+.bottom-nav{display:none}
+.speed-dial{display:none}
+.speed-dial-scrim{display:none}
+.growth-chart-wrap{padding:4px 0 8px}
+.growth-svg{width:100%;height:auto;display:block}
+.growth-empty{padding:20px 0}
+.platform-section-label{display:flex;align-items:center;gap:8px;margin:20px 0 10px}
+.platform-section-label:first-child{margin-top:0}
+.platform-section-label img{width:18px;height:18px}
+.platform-section-label span{font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text2);font-family:var(--font-mono)}
+/* CALENDAR */
+.cal-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.cal-nav-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.15s var(--ease)}
+.cal-nav-btn:hover{background:var(--bg2);border-color:var(--border2)}
+.cal-month-label{font-family:var(--font-display);font-size:19px;flex:1}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:20px}
+.cal-weekday{font-size:10px;font-family:var(--font-mono);color:var(--text3);text-align:center;padding-bottom:4px;letter-spacing:0.06em;text-transform:uppercase}
+.cal-cell{height:88px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px;display:flex;flex-direction:column;gap:3px;overflow:hidden;transition:border-color 0.15s var(--ease),background 0.15s var(--ease)}
+.cal-cell.other-month{background:var(--bg2);opacity:0.5}
+.cal-cell.today{border-color:var(--accent);border-width:1.5px}
+.cal-cell.drag-over{border-color:var(--accent);background:#C25B3F0C}
+.cal-cell-date{font-size:10px;font-family:var(--font-mono);color:var(--text3)}
+.cal-card{padding:3px 6px;border-radius:4px;font-size:10px;font-family:var(--font-body);font-weight:500;cursor:grab;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+.cal-card:active{cursor:grabbing}
+.cal-card img{width:10px;height:10px;flex-shrink:0}
+.cal-tray{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px;margin-bottom:16px}
+.cal-tray-cards{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.cal-tray-card{padding:8px 12px;border-radius:20px;border:1.5px dashed var(--border2);background:var(--bg2);font-size:12px;cursor:grab;display:flex;align-items:center;gap:6px;transition:all 0.15s var(--ease)}
+.cal-tray-card:active{cursor:grabbing}
+.cal-tray-card img{width:13px;height:13px}
+.cal-tray.drag-over{border-color:var(--accent);background:#C25B3F08}
+.cal-agenda-day{margin-bottom:18px}
+.cal-agenda-day-label{font-size:11px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:6px;padding:0 2px}
+.cal-agenda-day-label.today{color:var(--accent);font-weight:600}
+.cal-agenda-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;box-shadow:var(--shadow)}
+@media (max-width: 860px){
+  .sidebar{display:none}
+  .app{padding-bottom:0}
+  .main{width:100%}
+  .topbar{padding:0 16px;height:calc(var(--header-h) + max(24px,env(safe-area-inset-top)));padding-top:max(24px,env(safe-area-inset-top))}
+  .topbar-brand{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-logo);font-size:15px;letter-spacing:0.04em;color:var(--accent);margin-right:8px;flex-shrink:0}
+  .autosave-indicator span{display:none}
+  .content{padding:16px}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .stats-grid-3{grid-template-columns:1fr;gap:8px}
+  .two-col{grid-template-columns:1fr;gap:12px}
+  .post-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .perf-grid{grid-template-columns:repeat(2,1fr)}
+  .editor-form{padding:16px}
+  /* Mobile Calendar becomes a vertical agenda list — see .cal-agenda-* below —
+     so the old 7-col grid rules no longer apply at this breakpoint. */
+  .speed-dial{position:fixed;right:20px;bottom:calc(56px + env(safe-area-inset-bottom));z-index:60;display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+  .speed-dial-item{display:flex;align-items:center;gap:10px;opacity:0;transform:translateY(8px) scale(0.9);pointer-events:none;transition:opacity 0.15s var(--ease),transform 0.15s var(--ease)}
+  .speed-dial.open .speed-dial-item{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+  .speed-dial-item:nth-child(1){transition-delay:0.02s}
+  .speed-dial-item:nth-child(2){transition-delay:0.06s}
+  .speed-dial-item:nth-child(3){transition-delay:0.1s}
+  .speed-dial-item:nth-child(4){transition-delay:0.14s}
+  .speed-dial-label{background:var(--text);color:#F7F4EF;font-size:13px;font-family:var(--font-body);padding:7px 14px;border-radius:20px;white-space:nowrap;box-shadow:var(--shadow-md)}
+  .speed-dial-btn{width:44px;height:44px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:var(--shadow-md);cursor:pointer}
+  .speed-dial-btn.secondary{background:var(--surface);color:var(--text)}
+  .speed-dial-main{width:56px;height:56px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:26px;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(194,91,63,0.45);transition:transform 0.2s var(--ease),background 0.15s var(--ease);flex-shrink:0}
+  .speed-dial-main:active{transform:scale(0.94)}
+  .speed-dial.open .speed-dial-main{transform:rotate(45deg)}
+  .speed-dial-scrim{position:fixed;inset:0;background:rgba(0,0,0,0.15);z-index:55;opacity:0;pointer-events:none;transition:opacity 0.15s var(--ease)}
+  .speed-dial-scrim.open{opacity:1;pointer-events:auto}
+}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div id="app" class="app"></div>
+<div id="toast" class="toast"></div>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzs2L9qlx2iCPC-D8KBNSHKPZAWWCz-qxos8m3reif3ndKYurofSraIE5gPVCKZoLiOjw/exec";
+const SHEET_TOKEN = "sfmo6BYVjzUIPEYmkkwlu9olIEvzlRrA";
+const TRACK_TARGET_DAYS = {linkedin:3, instagram:7};
+function getTrackTarget(trackKey) { return TRACK_TARGET_DAYS[trackKey] || 7; }
+const FEEDBACK_TITLE = "Arcturus Feedback & Ideas";
+const FEEDBACK_POST_ID = "arcturus-feedback-post";
+const GROWTH_ID_PREFIX = "growth_";
+const IG_GROWTH_ID_PREFIX = "ig_growth_";
+const PILLARS = [
+  {id:"p1",label:"Sunday Treat Academy",short:"Academy",color:"#3B6E8F"},
+  {id:"p2",label:"Fun Founder Sketches",short:"Sketches",color:"#D98E3B"},
+  {id:"p3",label:"Me & the Team",short:"Team",color:"#5B8A5B"},
+  {id:"p4",label:"Personal Life",short:"Personal",color:"#7B4F8E"},
+  {id:"p5",label:"Memes",short:"Memes",color:"#C2467D"},
+];
+const STATUSES = [
+  {id:"idea",label:"Idea",color:"#94A3B8"},
+  {id:"draft",label:"Drafting",color:"#F59E0B"},
+  {id:"ready",label:"Ready",color:"#10B981"},
+  {id:"published",label:"Published",color:"#6B7280"},
+];
+const PLATFORMS_DEF = [
+  {id:"linkedin",label:"LinkedIn",cls:"li",color:"#0A66C2",wordRange:[150,300]},
+  {id:"instagram",label:"Instagram",cls:"ig",color:"#E1306C",wordRange:[50,150]},
+];
+
+// ── PLATFORM BADGES (inline SVG, no external files needed) ────────
+const LI_BADGE_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="9" fill="#0A66C2"/><rect x="12" y="16.8" width="4.4" height="12.2" fill="#FFFFFF"/><circle cx="14.2" cy="12.6" r="2.4" fill="#FFFFFF"/><path fill="#FFFFFF" d="M19.8 16.8h4.2v1.9c.7-1.1 1.9-2.3 4.2-2.3 3.2 0 5.4 2.1 5.4 6.3V29h-4.4v-6c0-1.9-.7-3.1-2.3-3.1-1.3 0-2 .9-2.3 1.7-.1.3-.2.7-.2 1.1V29h-4.4c0-1.2.1-11 0-12.2z"/></svg>';
+const IG_BADGE_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><linearGradient id="igGrad" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#FFDD55"/><stop offset="35%" stop-color="#E1306C"/><stop offset="100%" stop-color="#5851DB"/></linearGradient></defs><rect width="40" height="40" rx="9" fill="url(#igGrad)"/><rect x="10.5" y="10.5" width="19" height="19" rx="5.5" fill="none" stroke="#FFFFFF" stroke-width="1.8"/><circle cx="20" cy="20" r="5.2" fill="none" stroke="#FFFFFF" stroke-width="1.8"/><circle cx="26.3" cy="13.7" r="1.4" fill="#FFFFFF"/></svg>';
+function badgeDataUri(svg) { return "data:image/svg+xml," + encodeURIComponent(svg); }
+const LI_BADGE_URI = badgeDataUri(LI_BADGE_SVG);
+const IG_BADGE_URI = badgeDataUri(IG_BADGE_SVG);
+function platformBadge(platformId, size) {
+  size = size || 16;
+  const uri = platformId === "linkedin" ? LI_BADGE_URI : IG_BADGE_URI;
+  const label = platformId === "linkedin" ? "LinkedIn" : "Instagram";
+  return '<img class="pbadge" src="'+uri+'" width="'+size+'" height="'+size+'" alt="'+label+'" title="'+label+'">';
+}
+
+let state = {
+  posts:[],view:"overview",editingId:null,speedDialOpen:false,showUrlModal:false,
+  filterPillar:null,filterPlatform:null,filterStatuses:[],search:"",
+  loading:true,sheetStatus:"loading",sheetMessage:"Connecting…",pendingSync:[],
+  calWeekOffset:0,
+};
+let editorState = {};
+let autosaveTimer = null;
+let isCreatingPost = false;
+let draggedPostId = null;
+async function sheetRead() {
+  const res = await fetch(SCRIPT_URL + "?token=" + encodeURIComponent(SHEET_TOKEN));
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error || "Read failed");
+  return data.posts;
+}
+async function sheetWrite(post) {
+  const res = await fetch(SCRIPT_URL, {method:"POST",body:JSON.stringify({action:"write",post,token:SHEET_TOKEN})});
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error || "Write failed");
+}
+async function sheetDelete(id) {
+  const res = await fetch(SCRIPT_URL, {method:"POST",body:JSON.stringify({action:"delete",id,token:SHEET_TOKEN})});
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error || "Delete failed");
+}
+function genId() { return "post_"+Date.now()+"_"+Math.random().toString(36).slice(2,6); }
+function getPillar(id) { return PILLARS.find(p=>p.id===id); }
+function getStatus(id) { return STATUSES.find(s=>s.id===id); }
+function getPlatformDef(id) { return PLATFORMS_DEF.find(p=>p.id===id) || PLATFORMS_DEF[1]; }
+function safe(s) { return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function formatDate(iso) { if(!iso)return""; try{return new Date(iso).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});}catch(e){return iso;} }
+function formatDateShort(iso) { if(!iso)return""; try{return new Date(iso).toLocaleDateString("en-GB",{day:"numeric",month:"short"});}catch(e){return iso;} }
+function formatDateTime(iso) { if(!iso)return""; try{return new Date(iso).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});}catch(e){return iso;} }
+function daysSince(iso) {
+  if(!iso)return null;
+  try{ const diff=Date.now()-new Date(iso).getTime(); return Math.floor(diff/(1000*60*60*24)); }catch(e){return null;}
+}
+function parsePlatformsLegacy(val) {
+  if(!val)return[];
+  if(Array.isArray(val))return val;
+  return val.split(",").map(function(s){return s.trim();}).filter(Boolean);
+}
+function parseBool(val) {
+  return val===true||val==="true"||val==="TRUE"||val===1||val==="1";
+}
+function wordCount(text) {
+  if(!text)return 0;
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+function pillarTag(id) {
+  const p=getPillar(id);if(!p)return"";
+  return '<span class="tag" style="background:'+p.color+'18;color:'+p.color+'">'+p.short+'</span>';
+}
+function statusTag(id) {
+  const s=getStatus(id);if(!s)return"";
+  return '<span class="tag" style="background:'+s.color+'18;color:'+s.color+'">'+s.label+'</span>';
+}
+function photoBriefTag(post) {
+  const brief=(post.photo_brief||"").trim();
+  if(!brief) return "";
+  return '<span class="tag" style="background:#B8860B18;color:#B8860B" title="'+safe(brief)+'">📷 Brief</span>';
+}
+function embargoTag(post) {
+  if(!parseBool(post.embargoed)) return "";
+  return '<span class="tag" style="background:#DC262618;color:#DC2626">🔒 Embargo</span>';
+}
+// A post is "overdue" only when it's still Ready (never went out) and its
+// scheduled date has already passed. Published posts are never overdue —
+// they're done. Used identically in Library and Calendar so the meaning of
+// the badge doesn't have to be relearned per view.
+function isOverdue(post) {
+  return post.status==="ready" && post.suggested_date && new Date(post.suggested_date).getTime() < new Date().setHours(0,0,0,0);
+}
+function overdueBadge() {
+  return '<span class="tag" style="background:#7F1D1D18;color:#7F1D1D" title="Scheduled date has passed — reschedule or publish">⚠️ Overdue</span>';
+}
+function toggleEmbargo(postId) {
+  editorState.embargoed=!editorState.embargoed;
+  const el=document.getElementById("embargo-check");
+  if(el)el.innerHTML=renderEmbargoCheck();
+  clearTimeout(autosaveTimer);
+  doSaveNow(postId);
+}
+function renderEmbargoCheck() {
+  const checked=!!editorState.embargoed;
+  return '<div class="status-chip" style="'+(checked?"border-color:#DC2626;background:#DC262608;color:#DC2626":"")+'" onclick="toggleEmbargo(\''+editorState._postId+'\')"><input type="checkbox" style="display:none" '+(checked?"checked":"")+'> 🔒 Under embargo</div>';
+}
+let toastTimer;
+function showToast(msg,isError) {
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.className="toast show"+(isError?" error":"");
+  clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.className="toast";},3000);
+}
+function navigate(view,id) {
+  state.view=view;if(id)state.editingId=id;
+  state.speedDialOpen=false;
+  render();
+}
+function celebrate() {
+  const overlay=document.createElement("div");
+  overlay.style.cssText="position:fixed;inset:0;z-index:500;pointer-events:none;overflow:hidden";
+  const emojis=["🎉","✨","🚀","🟠","🎊"];
+  for(let i=0;i<24;i++){
+    const piece=document.createElement("div");
+    piece.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    piece.style.cssText="position:absolute;top:-40px;left:"+(Math.random()*100)+"%;font-size:"+(18+Math.random()*20)+"px;animation:confetti-fall "+(1.8+Math.random()*1.2)+"s ease-in forwards;animation-delay:"+(Math.random()*0.4)+"s;opacity:0.9";
+    overlay.appendChild(piece);
+  }
+  document.body.appendChild(overlay);
+  setTimeout(function(){overlay.remove();},3300);
+}
+async function copyToClipboard(text,btnEl,label) {
+  if(!text){ showToast("Nothing to copy yet",true); return; }
+  try {
+    await navigator.clipboard.writeText(text);
+    if(btnEl){
+      const original=btnEl.textContent;
+      btnEl.textContent="Copied ✓";
+      btnEl.classList.add("copied");
+      setTimeout(function(){ btnEl.textContent=original; btnEl.classList.remove("copied"); },1800);
+    }
+    showToast((label||"Copied")+" ✓");
+  } catch(err) {
+    showToast("Copy failed — try selecting manually",true);
+  }
+}
+function getPostMetrics(post) {
+  // Only views is required. Missing likes/comments/shares count as zero rather
+  // than blocking the whole calculation — many scraped posts have views+likes
+  // but no comments/shares captured, and were getting no verdict at all for it.
+  const views=parseFloat(post.views);
+  const hasViews = post.views!==""&&post.views!==undefined&&post.views!==null&&!isNaN(views)&&views>0;
+  if(!hasViews) return null;
+  const likes=parseFloat(post.likes), comments=parseFloat(post.comments), shares=parseFloat(post.shares);
+  const l=isNaN(likes)?0:likes, c=isNaN(comments)?0:comments, s=isNaN(shares)?0:shares;
+  return {views:views,likes:l,comments:c,shares:s,er:(l+c+s)/views};
+}
+function verdictLabel(er,baselineAvg) {
+  if(baselineAvg!==null && baselineAvg>0){
+    const ratio=er/baselineAvg;
+    if(ratio>=1.3) return "Strong";
+    if(ratio<=0.7) return "Weak";
+    return "Average";
+  }
+  if(er>=0.04) return "Strong";
+  if(er>=0.02) return "Average";
+  return "Weak";
+}
+function verdictBadge(v) {
+  if(!v) return "";
+  const colors={Strong:"#10B981",Average:"#F59E0B",Weak:"#DC2626"};
+  const c=colors[v]||"var(--text3)";
+  return '<span class="tag" style="background:'+c+'18;color:'+c+'">'+v+'</span>';
+}
+function isGrowthRow(post) { return post.id && (post.id.indexOf(GROWTH_ID_PREFIX)===0 || post.id.indexOf(IG_GROWTH_ID_PREFIX)===0); }
+function getGrowthEntries() {
+  return state.posts.filter(function(p){ return p.id && p.id.indexOf(GROWTH_ID_PREFIX)===0; })
+    .map(function(p){ return {date:p.updated_at, connections:parseFloat(p.connections)}; })
+    .filter(function(g){ return g.date && !isNaN(g.connections); })
+    .sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+}
+function getIgGrowthEntries() {
+  return state.posts.filter(function(p){ return p.id && p.id.indexOf(IG_GROWTH_ID_PREFIX)===0; })
+    .map(function(p){ return {date:p.updated_at, followers:parseFloat(p.followers)}; })
+    .filter(function(g){ return g.date && !isNaN(g.followers); })
+    .sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+}
+// NOTE: verdicts are computed SEPARATELY per platform — each platform's baseline
+// only ever looks at that platform's own prior scored posts, never mixed together,
+// since LinkedIn and Instagram engagement ranges aren't comparable.
+// v7.0: the old 14-day "not started" buffer is gone — the Support task starts
+// scraping views/likes/comments/shares from day one and keeps refreshing them
+// through day 42. A verdict is deliberately NOT computed during that window,
+// even though the raw numbers are visible and moving, because it's not final
+// yet. Only once a post is older than METRICS_LOCK_DAYS does ensureVerdicts
+// compute a verdict — once, using whatever metrics have settled by then — and
+// write it. After that it never recomputes: post.verdict being present at all
+// now means "locked", full stop.
+const METRICS_LOCK_DAYS = 42;
+function daysSincePublished(post) {
+  if(!post.published_at) return null;
+  return (Date.now()-new Date(post.published_at).getTime())/(1000*60*60*24);
+}
+function isMetricsLocked(post) {
+  const d=daysSincePublished(post);
+  return d!==null && d>METRICS_LOCK_DAYS;
+}
+function ensureVerdicts() {
+  ["linkedin","instagram"].forEach(function(platformId){
+    const platformPosts=state.posts.filter(function(p){return p.platform===platformId&&p.status==="published"&&p.published_at;})
+      .sort(function(a,b){return new Date(a.published_at)-new Date(b.published_at);});
+    platformPosts.forEach(function(post,idx){
+      if(post.verdict) return; // already locked in — never touch again
+      if(!isMetricsLocked(post)) return; // still tracking, too early to lock in
+      const m=getPostMetrics(post);
+      if(!m) return; // locked window reached but still no view data — stays unverdicted until data appears
+      const priorScored=platformPosts.slice(0,idx).map(function(p2){return {post:p2,m:getPostMetrics(p2)};}).filter(function(x){return x.m;});
+      const last5=priorScored.slice(-5);
+      let baselineAvg=null;
+      if(last5.length>=3){
+        baselineAvg=last5.reduce(function(sum,x){return sum+x.m.er;},0)/last5.length;
+      }
+      post.verdict=verdictLabel(m.er,baselineAvg);
+      savePost(Object.assign({},post));
+    });
+  });
+}
+// Two-state tag showing where a post sits in the metrics lifecycle: Tracking
+// (day 0-42, Support task actively scraping, numbers still moving, no verdict
+// yet) or Locked (day 42+, numbers and verdict are final). A verdict badge is
+// only ever shown alongside "Locked" — see lockedVerdictBadge() — so the two
+// tags can never contradict each other the way "Not started" + a verdict
+// used to.
+function metricsStatusTag(post) {
+  const d=daysSincePublished(post);
+  if(d===null) return "";
+  if(d<=METRICS_LOCK_DAYS) return '<span class="tag" style="background:#3B82F618;color:#3B82F6">♻️ Tracking</span>';
+  return '<span class="tag" style="background:#6B728018;color:#6B7280">🔒 Locked</span>';
+}
+// Gates verdict display on lock status rather than trusting post.verdict
+// alone — belt-and-braces so a stray/legacy verdict value on a still-tracking
+// post can never resurface the old contradictory display.
+function lockedVerdictBadge(post) {
+  return isMetricsLocked(post) ? verdictBadge(post.verdict) : "";
+}
+async function loadFromSheet() {
+  state.loading=true;state.sheetStatus="loading";state.sheetMessage="Loading from sheet…";render();
+  try {
+    const posts=await sheetRead();
+    state.posts=posts.map(function(p){
+      if (p.id && (p.id.indexOf(GROWTH_ID_PREFIX)===0 || p.id.indexOf(IG_GROWTH_ID_PREFIX)===0)) return p;
+      const legacyPlatforms=parsePlatformsLegacy(p.platforms);
+      const platform = p.platform || (legacyPlatforms.indexOf("linkedin")!==-1?"linkedin":(legacyPlatforms.indexOf("instagram")!==-1?"instagram":"instagram"));
+      const body = p.body || p.body_linkedin || p.body_instagram || p.body_threads || p.notes || "";
+      const post_url = p.post_url || p.linkedin_url || "";
+      return Object.assign({},p,{platform:platform,body:body,post_url:post_url,photo_brief:p.photo_brief||"",embargoed:parseBool(p.embargoed)});
+    });
+    ensureVerdicts();
+    state.loading=false;state.sheetStatus="connected";state.sheetMessage="Sheet connected";render();
+  } catch(err) {
+    state.loading=false;state.sheetStatus="error";state.sheetMessage="Error: "+err.message;render();
+    showToast("Could not load from sheet",true);
+  }
+}
+async function savePost(post) {
+  if(post.status==="published"&&!post.published_at) post.published_at=new Date().toISOString();
+  post.updated_at=new Date().toISOString();
+  const idx=state.posts.findIndex(function(p){return p.id===post.id;});
+  if(idx>=0)state.posts[idx]=post;else state.posts.push(post);
+  if(state.pendingSync.indexOf(post.id)===-1)state.pendingSync.push(post.id);
+  setAutosaveIndicator("saving");
+  try {
+    await sheetWrite(post);
+    state.pendingSync=state.pendingSync.filter(function(i){return i!==post.id;});
+    state.sheetMessage="All changes saved";
+    setAutosaveIndicator("saved");
+    updateSheetBar();
+  } catch(err) {
+    state.pendingSync=state.pendingSync.filter(function(i){return i!==post.id;});
+    setAutosaveIndicator("error");
+    showToast("Save failed: "+err.message,true);
+  }
+}
+function setAutosaveIndicator(status) {
+  const dot=document.getElementById("autosave-dot");
+  const txt=document.getElementById("autosave-txt");
+  if(!dot||!txt)return;
+  dot.className="autosave-dot "+status;
+  if(status==="saving"){txt.textContent="Saving…";}
+  else if(status==="saved"){txt.textContent="Saved";}
+  else if(status==="error"){txt.textContent="Save error";}
+  else{txt.textContent="Unsaved changes";}
+}
+function updateSheetBar() {
+  const bar=document.getElementById("sheet-bar-msg");
+  if(bar)bar.textContent=state.sheetMessage;
+}
+async function deletePost(id) {
+  if(!confirm("Delete this post? This can't be undone."))return;
+  state.posts=state.posts.filter(function(p){return p.id!==id;});
+  state.view="library";state.editingId=null;render();
+  try{await sheetDelete(id);showToast("Post deleted");}
+  catch(err){showToast("Delete failed: "+err.message,true);}
+}
+function blankPost(overrides) {
+  return Object.assign({
+    id:genId(),title:"",pillar:"p1",status:"idea",platform:"linkedin",body:"",
+    published_at:"",post_url:"",views:"",likes:"",comments:"",shares:"",verdict:"",
+    photo_brief:"",suggested_date:"",embargoed:false,
+    created_at:new Date().toISOString(),updated_at:new Date().toISOString(),
+  }, overrides||{});
+}
+// Goes straight to the editor rather than the old New Post modal — the modal
+// only ever captured Title/Pillar/Platform/Status/Idea, and the editor has
+// since grown Embargo, Scheduled Date, Photo Brief and Duplicate, none of
+// which the modal touched. A blank post is saved immediately so there's
+// something real to edit; title/pillar/platform default and get set in the
+// editor itself, same as editing any existing post.
+function createNewPost() {
+  if(isCreatingPost) return;
+  isCreatingPost=true;
+  const post=blankPost();
+  state.posts.push(post);
+  savePost(post);
+  navigate("editor",post.id);
+  isCreatingPost=false;
+}
+function duplicatePost(postId) {
+  const orig=state.posts.find(function(p){return p.id===postId;});
+  if(!orig)return;
+  const newPlatform = orig.platform==="linkedin"?"instagram":"linkedin";
+  const suffix = newPlatform==="instagram"?" for Insta":" for LinkedIn";
+  const newPost=blankPost({
+    title:(orig.title||"Untitled")+suffix,
+    pillar:orig.pillar,
+    status:"draft",
+    platform:newPlatform,
+    body:orig.body||"",
+    photo_brief:orig.photo_brief||"",
+  });
+  state.posts.push(newPost);
+  savePost(newPost);
+  showToast("Duplicate created ✓");
+  navigate("editor",newPost.id);
+}
+function goToFeedbackPost() {
+  if(state.loading){
+    showToast("Still loading your posts — try again in a moment",true);
+    return;
+  }
+  const matches=state.posts.filter(function(p){return p.id===FEEDBACK_POST_ID||p.title===FEEDBACK_TITLE;});
+  if(matches.length>0){
+    matches.sort(function(a,b){return (b.body||"").length-(a.body||"").length;});
+    navigate("editor",matches[0].id);
+    return;
+  }
+  const post=blankPost({id:FEEDBACK_POST_ID,title:FEEDBACK_TITLE,pillar:"p1",platform:"linkedin",status:"idea"});
+  state.posts.push(post);
+  savePost(post);
+  navigate("editor",post.id);
+}
+function scheduleAutosave(postId) {
+  clearTimeout(autosaveTimer);
+  setAutosaveIndicator("pending");
+  autosaveTimer=setTimeout(function(){ doSaveNow(postId); },2500);
+}
+async function doSaveNow(postId) {
+  clearTimeout(autosaveTimer);
+  const post=state.posts.find(function(p){return p.id===postId;});
+  if(!post)return;
+  const toSave=Object.assign({},post,editorState);
+  if(toSave.status==="published"&&!toSave.published_at){
+    toSave.published_at=new Date().toISOString();
+    editorState.published_at=toSave.published_at;
+    const db=document.getElementById("pub-date-block");
+    if(db)db.innerHTML=renderPublishedDateBlock();
+  }
+  await savePost(toSave);
+}
+function goBackFromEditor(postId) {
+  clearTimeout(autosaveTimer);
+  doSaveNow(postId);
+  navigate("library");
+}
+function getCadenceTrack(post) {
+  // Single Instagram track — no Personal/Work split. That split existed only
+  // for cadence tracking, produced no real distinction Oli asked for, and was
+  // causing false "overdue" reads when the two were checked separately.
+  return post.platform==="linkedin" ? "linkedin" : "instagram";
+}
+const TRACK_LABELS={linkedin:"LinkedIn",instagram:"Instagram"};
+const TRACK_COLORS={linkedin:"#0A66C2",instagram:"#E1306C"};
+function computeLastPublished(trackKey) {
+  const matches=state.posts.filter(function(p){return p.status==="published"&&p.published_at&&getCadenceTrack(p)===trackKey;});
+  if(matches.length===0)return null;
+  matches.sort(function(a,b){return new Date(b.published_at)-new Date(a.published_at);});
+  return matches[0];
+}
+function computeTrackStats(trackKey) {
+  const pubs=state.posts.filter(function(p){return p.status==="published"&&p.published_at&&getCadenceTrack(p)===trackKey;}).sort(function(a,b){return new Date(a.published_at)-new Date(b.published_at);});
+  if(pubs.length<2) return {avgDays:null,count:pubs.length};
+  let totalGap=0;
+  for(let i=1;i<pubs.length;i++){ totalGap += (new Date(pubs[i].published_at)-new Date(pubs[i-1].published_at))/(1000*60*60*24); }
+  return {avgDays: totalGap/(pubs.length-1), count:pubs.length};
+}
+// NOTE (v6.2): auto-assignment of suggested_date on load has been removed.
+// Dates are now set directly from the editor's Scheduled Date field, so a
+// Ready post with no date genuinely means "not scheduled yet" — it sits in
+// the Calendar's unscheduled tray until you set one, rather than silently
+// picking a date for you.
+function updateSuggestedDate(postId,dateStr) {
+  const post=state.posts.find(function(p){return p.id===postId;});
+  if(!post)return;
+  post.suggested_date=new Date(dateStr+"T09:00:00").toISOString();
+  savePost(Object.assign({},post));
+  render();
+}
+function getTodayStripSummary() {
+  const in7=Date.now()+7*24*60*60*1000;
+  const dueThisWeek=state.posts.filter(function(p){
+    return p.status==="ready"&&p.suggested_date&&new Date(p.suggested_date).getTime()<=in7&&new Date(p.suggested_date).getTime()>=Date.now()-24*60*60*1000;
+  }).length;
+  return {dueThisWeek:dueThisWeek};
+}
+function shouldShowBackupNudge() {
+  try {
+    const last=localStorage.getItem("arcturus_backup_nudge_at");
+    if(!last)return true;
+    return (Date.now()-parseInt(last,10))/(1000*60*60*24) > 30;
+  } catch(e){ return false; }
+}
+function dismissBackupNudge() {
+  try{ localStorage.setItem("arcturus_backup_nudge_at",String(Date.now())); }catch(e){}
+  const el=document.getElementById("backup-nudge");
+  if(el)el.remove();
+}
+// Sort options were removed (Pillar/Status already handled by filter chips,
+// Title A-Z and Last Edited/Oldest had no real use case once search exists).
+// Fixed order now: scheduled date ascending — soonest-to-post first, since
+// that's the one thing actually worth scanning the Library in order of.
+// Anything without a suggested_date (Idea/Draft/unscheduled Ready) has no
+// meaningful position in that order, so those sink to the end, sorted by
+// most-recently-edited among themselves so newer work still surfaces first.
+function sortPosts(list) {
+  const arr=list.slice();
+  arr.sort(function(a,b){
+    const aHas=!!a.suggested_date, bHas=!!b.suggested_date;
+    if(aHas && bHas) return new Date(a.suggested_date)-new Date(b.suggested_date);
+    if(aHas && !bHas) return -1;
+    if(!aHas && bHas) return 1;
+    return new Date(b.updated_at||b.created_at||0)-new Date(a.updated_at||a.created_at||0);
+  });
+  return arr;
+}
+
+// ── GROWTH CHART (shared renderer for LinkedIn connections + Instagram followers) ──
+function renderGrowthChartGeneric(entries, opts) {
+  const valueKey=opts.valueKey, color=opts.color, unitLabel=opts.unitLabel, gradId=opts.gradId, compact=opts.compact;
+  if(entries.length===0){
+    return '<div class="empty growth-empty" style="padding:'+(compact?"8px 0":"20px 0")+'"><div class="empty-title">No growth data yet</div><div class="empty-sub">Once the weekly '+opts.sourceLabel+' check starts logging, your growth line appears here.</div></div>';
+  }
+  const numSize = compact ? 22 : 32;
+  if(entries.length===1){
+    return '<div style="display:flex;align-items:baseline;gap:10px"><span style="font-family:var(--font-display);font-size:'+numSize+'px">'+entries[0][valueKey]+'</span><span style="font-size:12px;color:var(--text3)">'+unitLabel+' as of '+formatDate(entries[0].date)+'</span></div>';
+  }
+  const W=600, H=compact?70:160, padL=36,padR=12,padT=8,padB=compact?8:24;
+  const vals=entries.map(function(e){return e[valueKey];});
+  const minV=Math.min.apply(null,vals), maxV=Math.max.apply(null,vals);
+  const range=(maxV-minV)||1;
+  const chartW=W-padL-padR, chartH=H-padT-padB;
+  function xAt(i){ return padL + (i/(entries.length-1))*chartW; }
+  function yAt(v){ return padT + chartH - ((v-minV)/range)*chartH; }
+  let pathD="";
+  entries.forEach(function(e,i){ pathD += (i===0?"M":"L") + xAt(i).toFixed(1) + " " + yAt(e[valueKey]).toFixed(1) + " "; });
+  const areaD = pathD + "L"+xAt(entries.length-1).toFixed(1)+" "+(padT+chartH)+" L"+xAt(0).toFixed(1)+" "+(padT+chartH)+" Z";
+  const first=entries[0][valueKey], last=entries[entries.length-1][valueKey];
+  const change=last-first;
+  const changeStr=(change>=0?"+":"")+change;
+  const changeColor=change>0?"#10B981":change<0?"#DC2626":"var(--text3)";
+  let dots="";
+  entries.forEach(function(e,i){
+    if(i===0||i===entries.length-1||i%Math.ceil(entries.length/6)===0){
+      dots += '<circle cx="'+xAt(i).toFixed(1)+'" cy="'+yAt(e[valueKey]).toFixed(1)+'" r="'+(compact?2:3)+'" fill="'+color+'" stroke="#fff" stroke-width="1.5"/>';
+    }
+  });
+  let html='<div class="growth-chart-wrap">';
+  html += '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:'+(compact?"4px":"10px")+'">';
+  html += '<span style="font-family:var(--font-display);font-size:'+numSize+'px">'+last+'</span>';
+  html += '<span style="font-size:12px;color:var(--text3)">'+unitLabel+'</span>';
+  html += '<span style="font-size:12px;color:'+changeColor+';font-family:var(--font-mono);margin-left:auto">'+changeStr+' since '+formatDateShort(entries[0].date)+'</span>';
+  html += '</div>';
+  html += '<svg class="growth-svg" style="height:'+H+'px" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">';
+  html += '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+color+'" stop-opacity="0.18"/><stop offset="100%" stop-color="'+color+'" stop-opacity="0"/></linearGradient></defs>';
+  html += '<path d="'+areaD+'" fill="url(#'+gradId+')"/>';
+  html += '<path d="'+pathD+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  html += dots;
+  html += '</svg>';
+  if(!compact){
+    html += '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);font-family:var(--font-mono);margin-top:2px">';
+    html += '<span>'+formatDateShort(entries[0].date)+'</span><span>'+formatDateShort(entries[entries.length-1].date)+'</span>';
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+function renderGrowthChart(compact) {
+  return renderGrowthChartGeneric(getGrowthEntries(), {valueKey:"connections",color:"#0A66C2",unitLabel:"connections",gradId:"growthFadeLI",sourceLabel:"LinkedIn connections",compact:compact});
+}
+function renderIgGrowthChart(compact) {
+  return renderGrowthChartGeneric(getIgGrowthEntries(), {valueKey:"followers",color:"#E1306C",unitLabel:"followers",gradId:"growthFadeIG",sourceLabel:"Instagram followers",compact:compact});
+}
+
+// ── OVERVIEW (merged Dashboard + Metrics) ──────────────────────────
+function computeEngagementSnapshot(platformId) {
+  const scored=state.posts.filter(function(p){return p.platform===platformId&&p.status==="published"&&getPostMetrics(p);})
+    .sort(function(a,b){return new Date(b.published_at)-new Date(a.published_at);});
+  if(scored.length===0) return null;
+  const recent=scored.slice(0,10);
+  const avgER=recent.reduce(function(sum,p){return sum+getPostMetrics(p).er;},0)/recent.length;
+  const verdictCounts={Strong:0,Average:0,Weak:0};
+  recent.forEach(function(p){ if(p.verdict&&verdictCounts.hasOwnProperty(p.verdict)) verdictCounts[p.verdict]++; });
+  return {avgER:avgER,verdictCounts:verdictCounts,latestDataDate:scored[0].published_at,sampleSize:recent.length};
+}
+function renderEngagementCard(platformId,color,label) {
+  const snap=computeEngagementSnapshot(platformId);
+  let html='<div class="card" style="margin-bottom:16px"><div class="card-header"><span class="card-title" style="color:'+color+'">'+label+' Engagement</span></div><div class="card-body">';
+  // LinkedIn: connections growth, Instagram: follower growth — both compact,
+  // above the engagement figures, same merged-card pattern for both platforms.
+  if(platformId==="linkedin"){
+    html += '<div style="margin-bottom:14px">'+renderGrowthChart(true)+'</div>';
+    html += '<hr class="section-divider" style="margin:14px 0">';
+  } else if(platformId==="instagram"){
+    html += '<div style="margin-bottom:14px">'+renderIgGrowthChart(true)+'</div>';
+    html += '<hr class="section-divider" style="margin:14px 0">';
+  }
+  if(!snap){
+    html += '<div class="empty" style="padding:16px 0"><div class="empty-title">No scored posts yet</div></div>';
+  } else {
+    html += '<div style="font-family:var(--font-display);font-size:26px;line-height:1">'+(snap.avgER*100).toFixed(1)+'%</div>';
+    html += '<div style="font-size:11px;color:var(--text3);margin-bottom:12px">average engagement rate, last '+snap.sampleSize+' scored post'+(snap.sampleSize!==1?"s":"")+'</div>';
+    html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">';
+    ["Strong","Average","Weak"].forEach(function(v){
+      if(snap.verdictCounts[v]>0) html += '<span style="display:inline-flex;align-items:center;gap:4px">'+verdictBadge(v)+'<span style="font-size:11px;color:var(--text3)">×'+snap.verdictCounts[v]+'</span></span>';
+    });
+    html += '</div>';
+    html += '<div style="font-size:10px;color:var(--text3);font-family:var(--font-mono)">Data through '+formatDate(snap.latestDataDate)+' · Strong = 30%+ above '+label+'\'s own recent average, Weak = 30%+ below</div>';
+  }
+  html += '</div></div>';
+  return html;
+}
+function renderOverview() {
+  const todayStrip=getTodayStripSummary();
+
+  let html='<div class="content">';
+
+  html += '<div class="card" style="margin-bottom:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
+    + '<span style="color:var(--text2);font-size:13px">'+todayStrip.dueThisWeek+' due this week</span>'
+    + '<span style="margin-left:auto;color:var(--text3);font-size:11px;cursor:pointer" onclick="navigate(\'calendar\')">📅 Calendar →</span>'
+    + '</div>';
+
+  if(shouldShowBackupNudge()){
+    html += '<div class="card" id="backup-nudge" style="margin-bottom:16px;padding:12px 16px;display:flex;align-items:center;gap:10px;background:var(--bg2);flex-wrap:wrap">'
+      + '<span style="font-size:12px;color:var(--text2);flex:1;min-width:200px">💾 Worth duplicating your Google Sheet occasionally as a backup — it is the only copy of everything.</span>'
+      + '<button class="btn btn-ghost btn-sm" onclick="dismissBackupNudge()">Got it</button>'
+      + '</div>';
+  }
+
+  // LinkedIn section — Connections Growth now lives INSIDE the engagement card
+  // (was its own oversized card; merged per Oli's request to sit it alongside
+  // LinkedIn Engagement, using a compact chart rather than the full-size one).
+  html += '<div class="platform-section-label">'+platformBadge("linkedin",18)+'<span>LinkedIn</span></div>';
+  html += renderEngagementCard("linkedin","#0A66C2","LinkedIn");
+
+  // Instagram section — engagement only (no connection-count tracking exists for IG yet)
+  html += '<div class="platform-section-label">'+platformBadge("instagram",18)+'<span>Instagram</span></div>';
+  html += renderEngagementCard("instagram","#E1306C","Instagram");
+
+  const posted=state.posts.filter(function(p){return p.status==="published"&&p.published_at&&!isGrowthRow(p);}).sort(function(a,b){return new Date(b.published_at)-new Date(a.published_at);});
+  html += '<div class="card"><div class="card-header"><span class="card-title">Recently Posted</span><button class="btn btn-ghost btn-sm" onclick="state.filterStatuses=[\'published\'];navigate(\'library\')">View all →</button></div><div class="card-body">';
+  if(posted.length===0){
+    html += '<div class="empty" style="padding:24px 0"><div class="empty-title">Nothing published yet</div></div>';
+  } else {
+    posted.slice(0,15).forEach(function(p){
+      const trackKey=getCadenceTrack(p);
+      html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);flex-wrap:wrap">'
+        + '<span style="font-size:10px;color:var(--text3);font-family:var(--font-mono);flex-shrink:0">'+formatDate(p.published_at)+'</span>'
+        + '<span class="tag" style="background:'+TRACK_COLORS[trackKey]+'18;color:'+TRACK_COLORS[trackKey]+'">'+TRACK_LABELS[trackKey]+'</span>'
+        + '<span style="flex:1;font-size:13px;cursor:pointer;min-width:120px" onclick="navigate(\'editor\',\''+p.id+'\')">'+safe(p.title)+'</span>'
+        + lockedVerdictBadge(p)
+        + metricsStatusTag(p)
+        + '</div>';
+    });
+  }
+  html += '</div></div>';
+  html += '</div>';
+  return html;
+}
+
+// ── LIBRARY ───────────────────────────────────────────────────────
+function cardDisplayDate(p) {
+  // Scheduled date is more relevant than "last edited" once a post is Ready
+  // to go — that's the date that actually matters at this stage. Published
+  // posts keep showing when they went out. Everything else (Idea/Draft) has
+  // no scheduled date yet, so last-edited remains the only honest option.
+  // An overdue Ready post gets the same dark-red treatment as its badge,
+  // rather than the ordinary green "on schedule" tag.
+  if(p.status==="published"&&p.published_at) return {date:p.published_at,style:"background:#6B728018;color:#6B7280;margin-left:auto"};
+  if(p.status==="ready"&&p.suggested_date){
+    if(isOverdue(p)) return {date:p.suggested_date,style:"background:#7F1D1D18;color:#7F1D1D;margin-left:auto"};
+    return {date:p.suggested_date,style:"background:#10B98118;color:#10B981;margin-left:auto"};
+  }
+  return {date:p.updated_at,style:null};
+}
+function renderLibrary() {
+  let filtered=state.posts.filter(function(p){
+    if(isGrowthRow(p)) return false;
+    if(state.filterPillar&&p.pillar!==state.filterPillar)return false;
+    if(state.filterPlatform&&p.platform!==state.filterPlatform)return false;
+    if(state.filterStatuses.length>0&&state.filterStatuses.indexOf(p.status)===-1)return false;
+    if(state.search){
+      const q=state.search.toLowerCase();
+      return (p.title||"").toLowerCase().indexOf(q)!==-1||(p.body||"").toLowerCase().indexOf(q)!==-1;
+    }
+    return true;
+  });
+  filtered=sortPosts(filtered);
+  // Embargoed Ready posts sink to their own group at the bottom of the grid,
+  // regardless of sort order — the point is keeping "actually postable now"
+  // visually separate from "ready but can't go out yet", which otherwise get
+  // lost in amongst each other when several posts are embargoed at once.
+  const mainPosts=filtered.filter(function(p){ return !(p.status==="ready"&&parseBool(p.embargoed)); });
+  const embargoedReady=filtered.filter(function(p){ return p.status==="ready"&&parseBool(p.embargoed); });
+  let html = '<div class="content">'
+    + '<div class="filters">'
+    + '<input class="form-input" id="lib-search-input" style="width:200px;padding:6px 12px;font-size:12px;border-radius:20px" placeholder="Search posts…" value="'+safe(state.search)+'" oninput="const _p=this.selectionStart;state.search=this.value;renderMain();const _e=document.getElementById(\'lib-search-input\');if(_e){_e.focus();_e.setSelectionRange(_p,_p);}">';
+  PILLARS.forEach(function(p){
+    const active=state.filterPillar===p.id;
+    html += '<button class="pillar-dot-chip '+(active?"active":"")+'" style="'+(active?"background:"+p.color:"")+'" onclick="state.filterPillar=state.filterPillar===\''+p.id+'\'?null:\''+p.id+'\';renderMain()"><span class="dot" style="background:'+(active?"white":p.color)+'"></span>'+p.short+'</button>';
+  });
+  html += '<div class="platform-toggle">';
+  PLATFORMS_DEF.forEach(function(p){
+    const active=state.filterPlatform===p.id;
+    html += '<button class="platform-toggle-btn '+(active?"active":"")+'" onclick="state.filterPlatform=state.filterPlatform===\''+p.id+'\'?null:\''+p.id+'\';renderMain()">'+platformBadge(p.id,14)+'</button>';
+  });
+  html += '</div>'
+    + '<span style="margin-left:auto;font-size:12px;color:var(--text3);font-family:var(--font-mono)">'+filtered.length+' post'+(filtered.length!==1?"s":"")+'</span></div>';
+  // Multi-select status filter — clicking toggles a status in/out of state.filterStatuses.
+  // Empty array means "show all statuses" (equivalent to the old null default).
+  html += '<div class="filters">';
+  html += '<button class="status-filter-chip" style="'+(state.filterStatuses.length===0?"border-color:var(--accent);background:var(--accent);color:white":"")+'" onclick="state.filterStatuses=[];renderMain()">All</button>';
+  STATUSES.forEach(function(s){
+    const active=state.filterStatuses.indexOf(s.id)!==-1;
+    html += '<button class="status-filter-chip" style="'+(active?"border-color:"+s.color+";background:"+s.color+";color:white":"border-color:"+s.color+"44;color:"+s.color)+'" onclick="toggleStatusFilter(\''+s.id+'\')">'
+      + (active?'':'<span class="dot" style="background:'+s.color+'"></span>')
+      + s.label+'</button>';
+  });
+  html += '</div>';
+  if(filtered.length===0){
+    html += '<div class="empty"><div class="empty-title">'+(state.posts.length===0?"Library is empty":"No posts match")+'</div><div class="empty-sub">'+(state.posts.length===0?"Add your first post idea.":"Try adjusting your filters.")+'</div>'+(state.posts.length===0?'<button class="btn btn-primary" style="margin-top:8px" onclick="createNewPost()">+ New Post</button>':"")+'</div>';
+  } else {
+    function postCardHTML(p) {
+      const pl=getPillar(p.pillar);
+      const dd=cardDisplayDate(p);
+      const embargoed=parseBool(p.embargoed);
+      return '<div class="post-card'+(embargoed?" post-card-embargoed":"")+'" onclick="navigate(\'editor\',\''+p.id+'\')"><div class="post-card-pillar-bar" style="background:'+(pl?pl.color:"var(--border)")+'"></div><div class="post-card-title">'+(safe(p.title)||'<em style="color:var(--text3);font-weight:400">Untitled post</em>')+'</div>'
+        + (p.body?'<div class="post-card-body">'+safe(p.body)+'</div>':"")
+        + '<div class="post-card-meta">'+pillarTag(p.pillar)+statusTag(p.status)+platformBadge(p.platform,16)+photoBriefTag(p)+embargoTag(p)+(isOverdue(p)?overdueBadge():"")
+        + (dd.style?'<span class="tag" style="'+dd.style+'">'+formatDate(dd.date)+'</span>':'<span class="post-card-date">'+formatDate(dd.date)+'</span>')
+        + '</div></div>';
+    }
+    if(mainPosts.length>0){
+      html += '<div class="post-grid">';
+      mainPosts.forEach(function(p){ html += postCardHTML(p); });
+      html += '</div>';
+    } else {
+      html += '<div class="empty"><div class="empty-title">No posts match</div><div class="empty-sub">Everything here is embargoed — see below.</div></div>';
+    }
+    if(embargoedReady.length>0){
+      html += '<div class="embargo-section-divider"><span>🔒 Embargoed — ready, but not cleared to post</span></div>';
+      html += '<div class="post-grid">';
+      embargoedReady.forEach(function(p){ html += postCardHTML(p); });
+      html += '</div>';
+    }
+  }
+  html += '</div>';
+  return html;
+}
+function toggleStatusFilter(statusId) {
+  const idx=state.filterStatuses.indexOf(statusId);
+  if(idx===-1) state.filterStatuses.push(statusId);
+  else state.filterStatuses.splice(idx,1);
+  renderMain();
+}
+function surpriseMe() {
+  const drafts=state.posts.filter(function(p){return p.status==="draft"&&!isGrowthRow(p);});
+  if(drafts.length===0){ showToast("No drafts sitting around right now",true); return; }
+  const pick=drafts[Math.floor(Math.random()*drafts.length)];
+  navigate("editor",pick.id);
+}
+
+// ── CALENDAR ─────────────────────────────────────────────────────
+// Shows status=ready posts (placed on suggested_date, draggable to
+// reschedule) AND status=published posts that have a suggested_date, so the
+// grid also shows actual posting cadence, not just what's upcoming. Dragging
+// ONLY ever updates suggested_date, never status or any other field — that
+// only ever applies to Ready cards; published cards are read-only history.
+function getCalendarGridPosts() {
+  return state.posts.filter(function(p){
+    if(isGrowthRow(p)) return false;
+    if(p.status==="ready") return true;
+    if(p.status==="published" && p.suggested_date) return true;
+    return false;
+  });
+}
+function getUnscheduledReadyPosts() {
+  return state.posts.filter(function(p){ return p.status==="ready" && !isGrowthRow(p) && !p.suggested_date; });
+}
+// Rolling 4-week window anchored to "this week's Monday", shifted by
+// state.calWeekOffset weeks. Replaces the old month grid specifically so a
+// post can be dragged from late one month into early the next without any
+// navigation — both ends of that range are visible in the same view.
+function calWindowStart() {
+  const today=new Date(); today.setHours(0,0,0,0);
+  const dow=(today.getDay()+6)%7; // Monday=0
+  const mondayThisWeek=new Date(today);
+  mondayThisWeek.setDate(today.getDate()-dow);
+  const start=new Date(mondayThisWeek);
+  start.setDate(mondayThisWeek.getDate()+7*state.calWeekOffset);
+  return start;
+}
+function calRangeLabel(start) {
+  const end=new Date(start); end.setDate(start.getDate()+55);
+  const fmt=function(d){ return d.toLocaleDateString("en-GB",{day:"numeric",month:"short"}); };
+  return fmt(start)+' – '+fmt(end)+', '+end.getFullYear();
+}
+function calShiftWeek(delta) {
+  state.calWeekOffset += delta;
+  renderMain();
+}
+// Colour state per card: past-dated + published = confirms cadence (green).
+// Past-dated + still Ready = missed, needs a new date (dark red, deliberately
+// louder than the normal platform colour so it reads as needing action).
+// Anything not yet in the past keeps the normal platform colour regardless
+// of status, since "overdue" only makes sense in hindsight.
+function calCardColor(post) {
+  const isPast = post.suggested_date && new Date(post.suggested_date).getTime() < new Date().setHours(0,0,0,0);
+  if(isPast && post.status==="published") return {bg:"#10B98122",fg:"#0D7A57",border:"#10B98155"};
+  if(isPast && post.status==="ready") return {bg:"#7F1D1D22",fg:"#7F1D1D",border:"#7F1D1D66"};
+  const trackKey=getCadenceTrack(post);
+  const c=TRACK_COLORS[trackKey];
+  return {bg:c+"18",fg:c,border:null};
+}
+function calCardHTML(post) {
+  const c=calCardColor(post);
+  const draggable = post.status==="ready";
+  const overdue = isOverdue(post);
+  const style = "background:"+c.bg+";color:"+c.fg+(c.border?";border:1px solid "+c.border:"")+(draggable?"":";cursor:pointer");
+  return '<div class="cal-card" '+(draggable?'draggable="true"':'')+' style="'+style+'" '
+    + (draggable?'ondragstart="draggedPostId=\''+post.id+'\';event.dataTransfer.effectAllowed=\'move\'" ':'')
+    + 'onclick="event.stopPropagation();navigate(\'editor\',\''+post.id+'\')" title="'+(overdue?"Overdue — ":"")+safe(post.title)+'">'
+    + (overdue?'<span style="flex-shrink:0">⚠️</span>':platformBadge(post.platform,10))
+    + '<span style="overflow:hidden;text-overflow:ellipsis">'+safe(post.title||"Untitled")+'</span></div>';
+}
+// Mobile gets a genuinely different layout, not a squeezed version of the
+// desktop grid — a 7-col grid was unreadable at phone width (titles reduced
+// to 2-3 characters). Agenda list instead: one row per day that actually has
+// something, full titles visible, tap-to-reschedule instead of drag (touch
+// drag-and-drop across a scrolling list is unreliable, so this isn't a
+// downgrade, it's the more reliable interaction for the device).
+function isMobileViewport() {
+  return window.innerWidth <= 860;
+}
+function renderCalendar() {
+  return isMobileViewport() ? renderCalendarAgenda() : renderCalendarDesktop();
+}
+function renderCalendarAgenda() {
+  const scheduled=getCalendarGridPosts();
+  const unscheduled=getUnscheduledReadyPosts();
+  const start=calWindowStart();
+
+  let html='<div class="content">';
+
+  html += '<div class="cal-tray">';
+  html += '<div class="section-heading" style="margin-bottom:0">Unscheduled</div>';
+  if(unscheduled.length===0){
+    html += '<div style="font-size:12px;color:var(--text3);margin-top:8px">Nothing waiting — every Ready post has a date.</div>';
+  } else {
+    unscheduled.forEach(function(p){
+      html += '<div class="cal-agenda-row" style="border-bottom:1px solid var(--border)">'
+        + platformBadge(p.platform,16)
+        + '<span style="flex:1;font-size:13px;cursor:pointer" onclick="navigate(\'editor\',\''+p.id+'\')">'+safe(p.title||"Untitled")+'</span>'
+        + '<input type="date" class="form-input" style="width:132px;padding:6px 8px;font-size:12px" onchange="updateSuggestedDate(\''+p.id+'\',this.value)">'
+        + '</div>';
+    });
+  }
+  html += '</div>';
+
+  html += '<div class="cal-header">'
+    + '<button class="cal-nav-btn" onclick="calShiftWeek(-1)">‹</button>'
+    + '<span class="cal-month-label" style="font-size:16px">'+calRangeLabel(start)+'</span>'
+    + '<button class="cal-nav-btn" onclick="calShiftWeek(1)">›</button>'
+    + '</div>'
+    + '<button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;margin-bottom:14px" onclick="state.calWeekOffset=0;renderMain()">Today</button>';
+
+  const days=[];
+  for(let i=0;i<56;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i);
+    days.push(d);
+  }
+  const todayKey=new Date().toDateString();
+  let anyShown=false;
+  days.forEach(function(d){
+    const dateStr=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    const postsOnDay=scheduled.filter(function(p){ return p.suggested_date && p.suggested_date.slice(0,10)===dateStr; });
+    if(postsOnDay.length===0) return; // agenda view: only show days with something on them
+    anyShown=true;
+    const isToday=d.toDateString()===todayKey;
+    html += '<div class="cal-agenda-day">'
+      + '<div class="cal-agenda-day-label'+(isToday?" today":"")+'">'+d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"})+(isToday?' <span style="color:var(--accent)">· Today</span>':'')+'</div>';
+    postsOnDay.forEach(function(p){
+      const overdue=isOverdue(p);
+      const c=calCardColor(p);
+      html += '<div class="cal-agenda-row" onclick="navigate(\'editor\',\''+p.id+'\')" style="cursor:pointer;border-left:3px solid '+c.fg+'">'
+        + (overdue?'<span>⚠️</span>':platformBadge(p.platform,16))
+        + '<span style="flex:1;font-size:13px">'+safe(p.title||"Untitled")+'</span>'
+        + (p.status==="ready"?'<input type="date" class="form-input" style="width:132px;padding:6px 8px;font-size:12px" value="'+dateStr+'" onclick="event.stopPropagation()" onchange="event.stopPropagation();updateSuggestedDate(\''+p.id+'\',this.value)">':'<span class="tag" style="background:#10B98118;color:#10B981">Published</span>')
+        + '</div>';
+    });
+    html += '</div>';
+  });
+  if(!anyShown){
+    html += '<div class="empty" style="padding:30px 0"><div class="empty-title">Nothing scheduled in this window</div><div class="empty-sub">Try paging forward, or check the Unscheduled tray above.</div></div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+function renderCalendarDesktop() {
+  const scheduled=getCalendarGridPosts();
+  const unscheduled=getUnscheduledReadyPosts();
+
+  let html='<div class="content">';
+
+  // Unscheduled tray
+  html += '<div class="cal-tray" id="cal-tray" ondragover="event.preventDefault();document.getElementById(\'cal-tray\').classList.add(\'drag-over\')" ondragleave="document.getElementById(\'cal-tray\').classList.remove(\'drag-over\')" ondrop="handleTrayDrop(event)">';
+  html += '<div class="section-heading" style="margin-bottom:0">Unscheduled — drag onto a day</div>';
+  if(unscheduled.length===0){
+    html += '<div style="font-size:12px;color:var(--text3);margin-top:8px">Nothing waiting — every Ready post has a date.</div>';
+  } else {
+    html += '<div class="cal-tray-cards">';
+    unscheduled.forEach(function(p){
+      html += '<div class="cal-tray-card" draggable="true" ondragstart="draggedPostId=\''+p.id+'\';event.dataTransfer.effectAllowed=\'move\'" onclick="navigate(\'editor\',\''+p.id+'\')">'
+        + platformBadge(p.platform,13)+safe(p.title||"Untitled")+'</div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // Header — shows the actual visible date range, not a month name, since the
+  // window can (and often will) span two months at once.
+  const start=calWindowStart();
+  html += '<div class="cal-header">'
+    + '<button class="cal-nav-btn" onclick="calShiftWeek(-1)">‹</button>'
+    + '<span class="cal-month-label">'+calRangeLabel(start)+'</span>'
+    + '<button class="cal-nav-btn" onclick="calShiftWeek(1)">›</button>'
+    + '<button class="btn btn-ghost btn-sm" onclick="state.calWeekOffset=0;renderMain()">Today</button>'
+    + '</div>';
+
+  // Grid — 56 contiguous days (8 weeks) starting from the window start, no month breaks
+  const todayKey=new Date().toDateString();
+  const cells=[];
+  for(let i=0;i<56;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i);
+    cells.push(d);
+  }
+
+  html += '<div class="cal-grid">';
+  ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(function(wd){ html += '<div class="cal-weekday">'+wd+'</div>'; });
+  cells.forEach(function(d,i){
+    const isToday=d.toDateString()===todayKey;
+    const dateStr=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    const postsOnDay=scheduled.filter(function(p){ return p.suggested_date && p.suggested_date.slice(0,10)===dateStr; });
+    // Show the month abbreviation whenever a cell lands on the 1st, or on the very
+    // first cell of the grid, so a month change reads clearly without a hard break.
+    const showMonth = d.getDate()===1 || i===0;
+    const dayLabel = showMonth ? d.getDate()+' '+d.toLocaleDateString("en-GB",{month:"short"}) : String(d.getDate());
+    html += '<div class="cal-cell'+(isToday?" today":"")+'" '
+      + 'ondragover="event.preventDefault();this.classList.add(\'drag-over\')" '
+      + 'ondragleave="this.classList.remove(\'drag-over\')" '
+      + 'ondrop="handleCalDrop(event,\''+dateStr+'\')">'
+      + '<span class="cal-cell-date">'+dayLabel+'</span>';
+    postsOnDay.slice(0,2).forEach(function(p){ html += calCardHTML(p); });
+    if(postsOnDay.length>2){
+      html += '<span style="font-size:9px;color:var(--text3);font-family:var(--font-mono);padding-left:2px">+'+(postsOnDay.length-2)+' more</span>';
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+function handleCalDrop(evt,dateStr) {
+  evt.preventDefault();
+  evt.currentTarget.classList.remove("drag-over");
+  if(!draggedPostId) return;
+  updateSuggestedDate(draggedPostId,dateStr);
+  draggedPostId=null;
+}
+function handleTrayDrop(evt) {
+  evt.preventDefault();
+  document.getElementById("cal-tray").classList.remove("drag-over");
+  if(!draggedPostId) return;
+  const post=state.posts.find(function(p){return p.id===draggedPostId;});
+  if(post){
+    post.suggested_date="";
+    savePost(Object.assign({},post));
+    render();
+  }
+  draggedPostId=null;
+}
+
+function initEditor(post) {
+  editorState={
+    _postId:post.id,
+    title:post.title||"",pillar:post.pillar||"p1",status:post.status||"idea",
+    platform:post.platform||"linkedin",body:post.body||"",
+    published_at:post.published_at||null,post_url:post.post_url||"",
+    views:post.views||"",likes:post.likes||"",comments:post.comments||"",shares:post.shares||"",verdict:post.verdict||"",
+    photo_brief:post.photo_brief||"",suggested_date:post.suggested_date||"",embargoed:parseBool(post.embargoed),
+    editingPublishedDate:false,
+  };
+}
+function openUrlPrompt() {
+  state.showUrlModal=true;
+  render();
+}
+function saveUrlFromModal() {
+  const input=document.getElementById("url-modal-input");
+  const val=input?input.value.trim():"";
+  editorState.post_url=val;
+  state.showUrlModal=false;
+  render();
+  scheduleAutosave(editorState._postId);
+}
+function renderUrlModal() {
+  const platLabel=getPlatformDef(editorState.platform).label;
+  return '<div class="modal-overlay" onclick="state.showUrlModal=false;render()"><div class="modal" onclick="event.stopPropagation()" style="width:400px">'
+    + '<div class="modal-title">'+platLabel+' URL</div>'
+    + '<div class="modal-sub">Paste the live post link once it is up, or type NA if you are not tracking this one.</div>'
+    + '<div class="form-group"><input class="form-input" id="url-modal-input" value="'+safe(editorState.post_url||"")+'" placeholder="https://..." autofocus></div>'
+    + '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">'
+    + '<button class="btn btn-ghost" onclick="state.showUrlModal=false;render()">Cancel</button>'
+    + '<button class="btn btn-primary" onclick="saveUrlFromModal()">Save</button>'
+    + '</div></div></div>';
+}
+function renderPostUrlBlock() {
+  const platLabel=getPlatformDef(editorState.platform).label;
+  if(editorState.post_url){
+    const isUrl = /^https?:\/\//.test(editorState.post_url);
+    return '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
+      + (isUrl ? '<a href="'+safe(editorState.post_url)+'" target="_blank" class="post-url-link">View post ↗</a>' : '<span style="font-size:12px;color:var(--text3);font-family:var(--font-mono)">'+safe(editorState.post_url)+'</span>')
+      + '<button class="btn btn-ghost btn-sm" onclick="openUrlPrompt()">✏️ Edit</button>'
+      + '</div>';
+  }
+  return '<button class="btn btn-ghost btn-sm" onclick="openUrlPrompt()">+ Add '+platLabel+' URL</button>';
+}
+function handleStatusChip(val) {
+  const wasPublished = editorState.status==="published";
+  editorState.status=val;
+  if(val==="published"){
+    if(!editorState.published_at) editorState.published_at=new Date().toISOString();
+    if(!wasPublished) celebrate();
+  }
+  const db=document.getElementById("pub-date-block");
+  if(db)db.innerHTML=renderPublishedDateBlock();
+  const chipsEl=document.getElementById("status-chips");
+  if(chipsEl)chipsEl.innerHTML=renderStatusChips();
+  const perfEl=document.getElementById("performance-section");
+  if(perfEl)perfEl.innerHTML=renderPerformanceSection();
+  const urlEl=document.getElementById("post-url-wrap");
+  if(urlEl)urlEl.innerHTML=renderPostUrlSection();
+  clearTimeout(autosaveTimer);
+  doSaveNow(editorState._postId);
+  if(val==="published" && !wasPublished && !editorState.post_url){
+    setTimeout(function(){ openUrlPrompt(); },350);
+  }
+}
+function handlePlatformChange(val) {
+  editorState.platform=val;
+  scheduleAutosave(editorState._postId);
+  render();
+}
+function handleSuggestedDateChange(postId,dateStr) {
+  editorState.suggested_date = dateStr ? new Date(dateStr+"T09:00:00").toISOString() : "";
+  scheduleAutosave(postId);
+}
+function renderStatusChips() {
+  return STATUSES.map(function(s){
+    const active=editorState.status===s.id;
+    return '<div class="status-chip" style="'+(active?"background:"+s.color+";border-color:"+s.color+";color:white":"color:"+s.color)+'" onclick="handleStatusChip(\''+s.id+'\')"><div style="width:7px;height:7px;border-radius:50%;background:'+(active?"white":s.color)+';flex-shrink:0"></div>'+s.label+'</div>';
+  }).join("");
+}
+function updateWordCount() {
+  const p=getPlatformDef(editorState.platform);
+  const text=editorState.body||"";
+  const words=wordCount(text);
+  const chars=text.length;
+  const el=document.getElementById("word-count-display");
+  if(el)el.textContent=words+" word"+(words!==1?"s":"")+" · "+chars+" chars · ideal range "+p.wordRange[0]+"–"+p.wordRange[1]+" words";
+}
+function renderPublishedDateBlock() {
+  if(editorState.status!=="published") {
+    return '<div style="font-size:12px;color:var(--text3);font-family:var(--font-mono);padding:4px 0">Date recorded automatically when status set to Published</div>';
+  }
+  if(editorState.editingPublishedDate){
+    const dtLocal = editorState.published_at ? new Date(editorState.published_at).toISOString().slice(0,16) : "";
+    return '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
+      + '<input type="datetime-local" class="form-input" id="published-date-input" style="width:220px" value="'+dtLocal+'">'
+      + '<button class="btn btn-primary btn-sm" onclick="savePublishedDate()">Save</button>'
+      + '<button class="btn btn-ghost btn-sm" onclick="editorState.editingPublishedDate=false;document.getElementById(\'pub-date-block\').innerHTML=renderPublishedDateBlock()">Cancel</button>'
+      + '</div>';
+  }
+  return '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
+    + '<div class="published-date-field"><div class="published-date-dot"></div><span>Published '+formatDateTime(editorState.published_at)+'</span></div>'
+    + '<button class="btn btn-ghost btn-sm" onclick="editorState.editingPublishedDate=true;document.getElementById(\'pub-date-block\').innerHTML=renderPublishedDateBlock()">✏️ Edit</button>'
+    + '</div>';
+}
+function savePublishedDate() {
+  const input=document.getElementById("published-date-input");
+  const val=input?input.value:"";
+  if(!val){ showToast("Pick a date first",true); return; }
+  // suggested_date is deliberately left untouched here — it's "when this was
+  // meant to go out" and published_at is "when it actually did"; correcting
+  // one after the fact shouldn't silently move the other.
+  editorState.published_at=new Date(val).toISOString();
+  editorState.editingPublishedDate=false;
+  document.getElementById("pub-date-block").innerHTML=renderPublishedDateBlock();
+  scheduleAutosave(editorState._postId);
+}
+function renderPostUrlSection() {
+  if(editorState.status!=="published")return"";
+  return '<div class="form-group"><label class="form-label">'+getPlatformDef(editorState.platform).label+' URL</label><div id="post-url-block">'+renderPostUrlBlock()+'</div></div>';
+}
+function renderPerformanceSection() {
+  if(editorState.status!=="published")return"";
+  const locked=isMetricsLocked(editorState);
+  const vb=locked?verdictBadge(editorState.verdict):"";
+  let verdictLine;
+  if(locked){
+    verdictLine=vb||'<span style="color:var(--text3)">Not enough data yet</span>';
+  } else {
+    const lockDate=new Date(new Date(editorState.published_at).getTime()+METRICS_LOCK_DAYS*24*60*60*1000);
+    verdictLine='<span style="color:var(--text3)">Locks in on '+formatDate(lockDate.toISOString())+'</span>';
+  }
+  let html = '<hr class="section-divider"><div class="section-heading">Post Performance <span style="font-weight:400;text-transform:none;letter-spacing:normal">— filled in automatically from your metrics tracking</span></div><div class="perf-grid">';
+  ["views","likes","comments","shares"].forEach(function(f){
+    html += '<div class="perf-stat"><div class="perf-stat-label">'+(f.charAt(0).toUpperCase()+f.slice(1))+'</div><div class="perf-stat-value">'+(editorState[f]!==""&&editorState[f]!==undefined&&editorState[f]!==null?editorState[f]:"—")+'</div></div>';
+  });
+  html += '</div><div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3)">Verdict: '+verdictLine+'</div>';
+  return html;
+}
+function renderEditor(post) {
+  const e=editorState;
+  const pl=getPillar(e.pillar);
+  const platDef=getPlatformDef(e.platform);
+  const otherPlatform = e.platform==="linkedin" ? "Instagram" : "LinkedIn";
+  const words=wordCount(e.body);
+  let html = '<div style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0"><div class="topbar"><button class="btn btn-ghost btn-sm" id="editor-back-btn" onclick="goBackFromEditor(\''+post.id+'\')">← Back</button><div style="flex:1;display:flex;align-items:center;gap:10px;min-width:0">'
+    + (pl?'<div style="width:10px;height:10px;border-radius:2px;background:'+pl.color+';flex-shrink:0"></div>':"")
+    + '<span id="editor-title-display" style="font-family:var(--font-display);font-size:16px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(safe(e.title)||'<em style="color:var(--text3);font-style:italic">Untitled post</em>')+'</span>'
+    + '<div class="autosave-indicator" style="flex-shrink:0"><div class="autosave-dot saved" id="autosave-dot"></div><span id="autosave-txt">Saved</span></div></div>'
+    + '<button class="btn btn-danger btn-sm" onclick="deletePost(\''+post.id+'\')">Delete</button></div>'
+    + '<div class="editor-form">'
+    + '<div class="form-group"><label class="form-label">Title</label><input class="form-input" value="'+safe(e.title)+'" autofocus oninput="editorState.title=this.value;scheduleAutosave(\''+post.id+'\');const d=document.getElementById(\'editor-title-display\');if(d)d.innerHTML=this.value||\'<em style=color:var(--text3);font-style:italic>Untitled post</em>\'" placeholder="What\'s the core idea in a line?"></div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label class="form-label">Pillar</label><select class="form-input form-select" onchange="editorState.pillar=this.value;scheduleAutosave(\''+post.id+'\')">';
+  PILLARS.forEach(function(p){ html += '<option value="'+p.id+'" '+(e.pillar===p.id?"selected":"")+'>'+p.label+'</option>'; });
+  html += '</select></div>'
+    + '<div class="form-group"><label class="form-label">Platform</label><select class="form-input form-select" onchange="handlePlatformChange(this.value)">';
+  PLATFORMS_DEF.forEach(function(p){ html += '<option value="'+p.id+'" '+(e.platform===p.id?"selected":"")+'>'+p.label+'</option>'; });
+  html += '</select></div></div>'
+    + '<div class="form-group"><label class="form-label">Status</label><div class="status-chip-row" id="status-chips">'+renderStatusChips()+'</div></div>'
+    + '<div class="form-group"><label class="form-label">Embargo</label><div id="embargo-check">'+renderEmbargoCheck()+'</div></div>'
+    + '<div class="form-group"><label class="form-label">Scheduled Date <span style="font-weight:400;text-transform:none;letter-spacing:normal">— when this should go out. Leave blank to sit unscheduled on the Calendar.</span></label><input type="date" class="form-input" value="'+(e.suggested_date?e.suggested_date.slice(0,10):"")+'" onchange="handleSuggestedDateChange(\''+post.id+'\',this.value)"></div>'
+    + '<div class="form-group"><label class="form-label">Photo Brief</label><textarea class="form-input form-textarea short" oninput="editorState.photo_brief=this.value;scheduleAutosave(\''+post.id+'\')" placeholder="What photos does this post need before it goes to Buffer? e.g. \'wide shot of the set, plus a close-up of the FatJoe branding\'">'+safe(e.photo_brief)+'</textarea></div>'
+    + '<div class="form-group"><label class="form-label">Body Text</label>'
+    + '<div style="display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;margin-bottom:6px">'
+    + '<button class="btn btn-copy" onclick="copyToClipboard(editorState.body,this,\'Copied\')">📋 Copy text</button>'
+    + '</div>'
+    + '<textarea class="form-input form-textarea tall" oninput="editorState.body=this.value;scheduleAutosave(\''+post.id+'\');updateWordCount()" placeholder="Write your post here.">'+safe(e.body)+'</textarea>'
+    + '<div class="word-count-row"><span class="word-count-text" id="word-count-display">'+words+' word'+(words!==1?"s":"")+' · '+e.body.length+' chars · ideal range '+platDef.wordRange[0]+'–'+platDef.wordRange[1]+' words</span></div>'
+    + '</div>'
+    + '<div class="form-group"><label class="form-label">Published Date</label><div id="pub-date-block">'+renderPublishedDateBlock()+'</div></div>'
+    + '<div id="post-url-wrap">'+renderPostUrlSection()+'</div>'
+    + '<div id="performance-section">'+renderPerformanceSection()+'</div>'
+    + '<hr class="section-divider">'
+    + '<div class="section-heading">Duplicate</div>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">'
+    + '<button class="btn btn-ghost btn-sm" onclick="duplicatePost(\''+post.id+'\')">🔁 Duplicate for '+otherPlatform+'</button>'
+    + '</div>'
+    + '</div></div>';
+  return html;
+}
+function renderSidebar() {
+  const counts=PILLARS.reduce(function(acc,p){acc[p.id]=state.posts.filter(function(x){return x.pillar===p.id&&!isGrowthRow(x);}).length;return acc;},{});
+  let html = '<div class="sidebar"><div class="sidebar-logo"><div class="sidebar-logo-name">🟠 ARCTURUS</div><div class="sidebar-logo-sub">Social Content Database</div><div class="sidebar-logo-version">v7.0</div></div><nav class="sidebar-nav"><div class="sidebar-section-label">Views</div>';
+  [{id:"overview",label:"Overview"},{id:"library",label:"Post Library"},{id:"calendar",label:"Calendar"}].forEach(function(item){
+    html += '<button class="nav-item '+(state.view===item.id?"active":"")+'" onclick="navigate(\''+item.id+'\')">'+item.label+'</button>';
+  });
+  html += '<div class="sidebar-section-label" style="margin-top:8px">Pillars</div>';
+  PILLARS.forEach(function(p){
+    html += '<button class="nav-item" onclick="state.filterPillar=\''+p.id+'\';navigate(\'library\')"><div class="nav-dot" style="background:'+p.color+'"></div>'+p.short+'<span class="nav-count">'+(counts[p.id]||0)+'</span></button>';
+  });
+  html += '</nav><div style="padding:12px 10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:8px">'
+    + '<button class="btn btn-ghost" style="width:100%;justify-content:center;color:#F7F4EF;border-color:rgba(255,255,255,0.15)" onclick="goToFeedbackPost()">💬 Feedback</button>'
+    + '<button class="btn btn-primary" style="width:100%;justify-content:center" onclick="createNewPost()">+ New Post</button></div></div>';
+  return html;
+}
+// Mobile-only. Replaces the old fixed 3-item bar + separate hamburger menu —
+// both were fighting for the same strip of screen (see v6.5's overlapping
+// Calendar label). One floating button, tap to fan out every destination as
+// labelled bubbles, tap again (or the scrim, or any bubble) to close.
+function toggleSpeedDial() {
+  state.speedDialOpen = !state.speedDialOpen;
+  render();
+}
+function speedDialGo(action) {
+  state.speedDialOpen = false;
+  if(action==="new"){ createNewPost(); }
+  else if(action==="feedback"){ goToFeedbackPost(); }
+  else { navigate(action); }
+}
+function renderSpeedDial() {
+  const open = state.speedDialOpen;
+  const items = [
+    {action:"feedback", label:"Feedback", icon:"💬"},
+    {action:"calendar", label:"Calendar", icon:"📅"},
+    {action:"library", label:"Post Library", icon:"📋"},
+    {action:"overview", label:"Overview", icon:"🏠"},
+    {action:"new", label:"New Post", icon:"➕"},
+  ];
+  let html = '<div class="speed-dial-scrim'+(open?" open":"")+'" onclick="toggleSpeedDial()"></div>';
+  html += '<div class="speed-dial'+(open?" open":"")+'">';
+  items.forEach(function(it){
+    html += '<div class="speed-dial-item"><span class="speed-dial-label">'+it.label+'</span><button class="speed-dial-btn secondary" onclick="speedDialGo(\''+it.action+'\')">'+it.icon+'</button></div>';
+  });
+  html += '<button class="speed-dial-main" onclick="toggleSpeedDial()">+</button>';
+  html += '</div>';
+  return html;
+}
+function renderSheetBar() {
+  const dotClass=state.sheetStatus==="connected"?"connected":state.sheetStatus==="loading"?"loading":"error";
+  const n=state.pendingSync.length;
+  const msg=n>0?(n+" change"+(n>1?"s":"")+" saving…"):state.sheetMessage;
+  return '<div class="sheet-bar"><div class="sheet-dot '+dotClass+'"></div><span>Google Sheet</span><span style="color:var(--border2)">·</span><span id="sheet-bar-msg" style="color:var(--text2)">'+msg+'</span><button class="btn btn-ghost btn-sm" style="margin-left:auto;font-size:10px;padding:3px 8px" onclick="loadFromSheet()">↻ Refresh</button></div>';
+}
+function renderMain() {
+  const main=document.getElementById("main-area");if(!main)return;
+  let html="";
+  if(state.loading){
+    html='<div class="loading-screen"><div class="loading-spinner"></div><span style="font-family:var(--font-mono);font-size:12px;color:var(--text3)">Loading from sheet…</span></div>';
+  }else if(state.view==="editor"){
+    const post=state.posts.find(function(p){return p.id===state.editingId;});
+    if(post){
+      if(editorState._postId!==post.id)initEditor(post);
+      html=renderEditor(post);
+    }else{
+      html='<div class="empty"><div class="empty-title">Post not found</div></div>';
+    }
+  }else if(state.view==="library"){
+    html='<div class="topbar"><span class="topbar-title"><span class="topbar-brand">🟠 ARCTURUS</span>Post Library</span></div><div class="view-enter">'+renderLibrary()+'</div>';
+  }else if(state.view==="calendar"){
+    html='<div class="topbar"><span class="topbar-title"><span class="topbar-brand">🟠 ARCTURUS</span>Calendar</span></div><div class="view-enter">'+renderCalendar()+'</div>';
+  }else{
+    html='<div class="topbar"><span class="topbar-title"><span class="topbar-brand">🟠 ARCTURUS</span>Overview</span></div><div class="view-enter">'+renderOverview()+'</div>';
+  }
+  main.innerHTML=html+renderSheetBar();
+}
+function render() {
+  const app=document.getElementById("app");
+  app.innerHTML=renderSidebar()+'<div id="main-area" class="main"></div>'+renderSpeedDial()
+    +(state.showUrlModal?renderUrlModal():"");
+  renderMain();
+}
+// ── KEYBOARD SHORTCUTS ──────────────────────────────────────────────
+// 1/2/3 jump to Overview/Library/Calendar. Ignored while typing in any
+// field, or while a modal is open, so it never fires mid-sentence in the
+// editor or steals a "1"/"2"/"3" you're actually typing into a post.
+document.addEventListener("keydown", function(e) {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const tag = (e.target.tagName || "").toLowerCase();
+  if (tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable) return;
+  if (state.showUrlModal || state.speedDialOpen) return;
+  if (e.key === "1") { navigate("overview"); }
+  else if (e.key === "2") { navigate("library"); }
+  else if (e.key === "3") { navigate("calendar"); }
+});
+// Calendar has two genuinely different layouts (mobile agenda vs desktop
+// grid) picked by viewport width — re-render it on resize so rotating a
+// phone or resizing a browser window switches layout without a manual
+// refresh. Only re-renders when Calendar is the active view, to avoid
+// pointless work on every resize elsewhere in the app.
+let resizeTimer=null;
+window.addEventListener("resize", function(){
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(function(){
+    if(state.view==="calendar") renderMain();
+  },150);
+});
+render();
+loadFromSheet();
+</script>
+</body>
+</html>
